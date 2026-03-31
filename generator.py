@@ -2,7 +2,7 @@
 
 import csv
 import os
-from noeud import Noeud
+from node import Node
 
 def generate_dataset(max_depth=9, filename="dataset.csv"):
     """
@@ -17,14 +17,14 @@ def generate_dataset(max_depth=9, filename="dataset.csv"):
     os.makedirs("ressources", exist_ok=True)
     
     # Initialize root node
-    root = Noeud()
+    root = Node()
     
     # Collect game data
     data_list = []
     
     # Run minimax with data collection
     print(f"Generating dataset with max depth {max_depth}...")
-    Noeud.minimax_with_data(root, max_depth, Noeud.X, data_list)
+    Node.minimax_with_data(root, max_depth, Node.X, data_list)
     
     # Save to CSV file
     filepath = os.path.join("ressources", filename)
@@ -32,7 +32,7 @@ def generate_dataset(max_depth=9, filename="dataset.csv"):
         writer = csv.writer(csvfile)
         
         # Write header
-        writer.writerow(Noeud.csv_header())
+        writer.writerow(Node.csv_header())
         
         # Write data rows
         for row in data_list:
