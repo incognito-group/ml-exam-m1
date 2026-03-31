@@ -1,0 +1,137 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+body{
+    background-color: #000;
+}
+.contenaire{
+    display: grid;
+    grid-template-columns: 20%  80%;
+    height: 99vh;
+}
+.mode{
+    width: 100%;
+   color: #fff;
+   border: #868686 solid 1px;
+}
+.mode{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: 100%;
+}
+.mode:hover {
+    cursor: pointer;
+}
+.mode p{
+     margin: 30px 0;
+     text-align: center;
+     text-transform: uppercase;
+     font-size: 30px;
+}
+.mode li{
+    text-align: center;
+}
+ul li {
+    text-decoration: none;
+    list-style-type:none;
+    margin: 30px 0;
+    padding: 20px 0;
+    font-size: 20px;
+    letter-spacing: "5px";
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #979797;
+}
+ul li:hover{
+    background-color: grey;
+}
+.tableau{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    position: relative;
+    width: 80%;
+    height: 99vh;
+}
+table {
+    background-color: #fff;
+    border-collapse: collapse;
+}
+.tableau td{
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #fff;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+.tableau td:hover{
+    background-color: #f0f0f0;
+}
+.tableau td:nth-child(1), .tableau td:nth-child(2){
+    border-right: 2px solid #fff;
+}
+.tableau tr:nth-child(1) td ,.tableau tr:nth-child(2) td{
+    border-bottom: 2px solid #fff;
+}
+.modal_hidden{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100;
+}
+.modal-box{
+    background-color: rgb(209, 209, 209);
+    padding: 40px 30px;
+    width: 40%;
+    height: 40%;
+    position: relative;
+    border-radius: 10px;
+    padding-bottom: 40px;
+    text-align: center;
+}
+.modal-box h2{
+      text-align: center;
+     text-transform: uppercase;
+     font-size: 30px;
+}
+.close-button{
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: red;
+    cursor: pointer;
+    line-height: 1;   
+}
+button{
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+transform: translateX(-50%);
+    box-shadow: none;
+    box-sizing: none;
+    padding: 20px 40px;
+    border-radius: 10px ;
+    background-color: rgb(8, 111, 151);
+    border: 2px solid rgb(8, 111, 151) ;
+    color: #fff;
+    text-transform: uppercase;
+    margin-top: auto;
+}
