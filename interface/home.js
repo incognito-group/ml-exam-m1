@@ -77,17 +77,17 @@ async function selectMode(modeIndex) {
 
 async function makeMove(cellIndex) {
     if (!sessionId) {
-        alert('Please start a game first');
+        alert('Sélectionnez un mode de jeu d\'abord');
         return;
     }
     
     if (gameOver) {
-        alert('Game is over. Click "Rejouer" to start a new one');
+        alert('Game over. Cliquer "Rejouer" pour commencer une nouvelle partie');
         return;
     }
     
     if (gameBoard[cellIndex] !== STATE_EMPTY) {
-        alert('This cell is already occupied');
+        alert('Cellue déjà remplie');
         return;
     }
     
@@ -127,7 +127,6 @@ async function makeMove(cellIndex) {
         
     } catch (error) {
         console.error('Error making move:', error);
-        alert('Error making move. Check console for details');
     }
 }
 
@@ -165,18 +164,18 @@ function updateBoard() {
 }
 
 function endGame(winner) {
-    gameOver = true;
-    modal.style.display = 'block';
+    setInterval(() => {
+        gameOver = true;
+        modal.style.display = 'flex';
     
-    if (winner === 1) {
-        modalMessage.textContent = '✓ X wins!';
-    } else if (winner === -1) {
-        modalMessage.textContent = '✓ O wins!';
-    } else if (winner === 0) {
-        modalMessage.textContent = "It's a draw!";
-    }
-    
-    console.log('Game over. Winner:', winner);
+        if (winner === 1) {
+            modalMessage.textContent = 'X a gagné!';
+        } else if (winner === -1) {
+            modalMessage.textContent = 'O a gagné!';
+        } else if (winner === 0) {
+            modalMessage.textContent = "Match null";
+        }
+    }, 500)
 }
 
 function restart() {

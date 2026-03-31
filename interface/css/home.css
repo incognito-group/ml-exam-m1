@@ -68,13 +68,11 @@ table {
     font-weight: bold;
     text-align: center;
     vertical-align: middle;
-    background-color: #fff;
+    background-color: #000;
     user-select: none;
     transition: background-color 0.2s ease;
 }
-.tableau td:hover{
-    background-color: #f0f0f0;
-}
+
 .tableau td:nth-child(1), .tableau td:nth-child(2){
     border-right: 2px solid #fff;
 }
@@ -124,7 +122,7 @@ button{
     position: absolute;
     bottom: 25px;
     left: 50%;
-transform: translateX(-50%);
+    transform: translateX(-50%);
     box-shadow: none;
     box-sizing: none;
     padding: 20px 40px;
