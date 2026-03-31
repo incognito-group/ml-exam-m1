@@ -14,6 +14,11 @@ CORS(app)
 # Game sessions storage
 game_sessions = {}
 session_counter = 0
+minimax_stats = {
+    'total_calls': 0,
+    'hybrid_mode_calls': 0,
+    'vs_ml_mode_calls': 0
+}
 
 def board_to_list(node):
     """Convert Node board state to list"""
@@ -58,11 +63,27 @@ def check_game_over(board):
 def new_game():
     """Start a new game"""
     global session_counter
-    session_counter += 1
-    session_id = str(session_counter)
     
     data = request.json
-    mode = data.get('mode', '2_players')  # '2_players', 'hybrid', 'vs_ml'
+    mode = data.get('mode')  # '2_players', 'hybrid', 'vs_ml'
+    
+    # Validate mode is provided
+    if not mode:
+        return jsonify({
+            'error': 'Veuillez sélectionner un mode de jeu',
+            'valid_modes': ['2_players', 'hybrid', 'vs_ml']
+        }), 400
+    
+    # Validate mode is valid
+    valid_modes = ['2_players', 'hybrid', 'vs_ml']
+    if mode not in valid_modes:
+        return jsonify({
+            'error': f'Mode "{mode}" invalide',
+            'valid_modes': valid_modes
+        }), 400
+    
+    session_counter += 1
+    session_id = str(session_counter)
     
     game_sessions[session_id] = {
         'board': [0] * 9,
@@ -116,9 +137,9 @@ def make_move(session_id):
     if not game_over:
         game['current_player'] = -game['current_player']
         
-        # If it's AI's turn in vs_ml mode
-        if game['mode'] == 'vs_ml' and game['current_player'] == -1:
-            ai_move = get_best_move(game['board'])
+        # If it's AI's turn in vs_ml or hybrid mode
+        if game['mode'] in ['vs_ml', 'hybrid'] and game['current_player'] == -1:
+            ai_move = get_best_move(game['board'], game['mode'])
             if ai_move is not None:
                 game['board'][ai_move] = -1
                 response['ai_move'] = ai_move
@@ -180,29 +201,58 @@ def reset_game(session_id):
         'message': 'Game reset'
     })
 
-def get_best_move(board):
+def get_best_move(board, mode='vs_ml'):
     """Compute best move using Minimax for O (AI)"""
+    global minimax_stats
+    
     node = list_to_board(board)
     
+    # Track minimax calls
+    minimax_stats['total_calls'] += 1
+    if mode == 'hybrid':
+        minimax_stats['hybrid_mode_calls'] += 1
+    else:
+        minimax_stats['vs_ml_mode_calls'] += 1
+    
     # Run minimax to depth 9 (full game tree)
-    Node.minimax(node, 9, Node.O)
+    print(f"[MINIMAX] Computing best move for O with depth 9 (mode: {mode})...")
+    minimax_value = Node.minimax(node, 9, Node.O)
     
     if node.best is None:
+        print("[MINIMAX] No best move found!")
         return None
     
     # Find which position changed
     for i in range(9):
         if node.etat[i] != node.best.etat[i]:
+            print(f"[MINIMAX] Best move: position {i} (evaluation: {minimax_value})")
             return i
     
     return None
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
-    """Get server statistics"""
+    """Get server statistics including Minimax usage"""
     return jsonify({
         'total_sessions': len(game_sessions),
-        'active_sessions': sum(1 for g in game_sessions.values() if not check_game_over(g['board'])[0])
+        'active_sessions': sum(1 for g in game_sessions.values() if not check_game_over(g['board'])[0]),
+        'minimax': {
+            'total_calls': minimax_stats['total_calls'],
+            'hybrid_calls': minimax_stats['hybrid_mode_calls'],
+            'vs_ml_calls': minimax_stats['vs_ml_mode_calls']
+        }
+    })
+
+@app.route('/api/minimax/info', methods=['GET'])
+def minimax_info():
+    """Get Minimax configuration and statistics"""
+    return jsonify({
+        'status': 'active',
+        'depth': 9,
+        'algorithm': 'Minimax with Alpha-Beta pruning',
+        'modes': ['vs_ml', 'hybrid'],
+        'statistics': minimax_stats,
+        'description': 'Minimax is connected to both vs_ml and hybrid modes. The AI plays as O and computes optimal moves.'
     })
 
 @app.route('/health', methods=['GET'])
@@ -212,5 +262,14 @@ def health_check():
 
 if __name__ == '__main__':
     print("Starting Tic-Tac-Toe AI API Server...")
-    print("Frontend should connect to: http://localhost:5000")
+    print("=" * 60)
+    print("Minimax Algorithm ACTIVE")
+    print("Modes: 2_players, hybrid, vs_ml")
+    print("Hybrid Mode: AI plays automatically (uses Minimax)")
+    print("VS ML Mode: AI plays automatically (uses Minimax)")
+    print("Minimax Depth: 9 (full game tree)")
+    print("=" * 60)
+    print("Check /api/minimax/info for configuration details")
+    print("Check /api/stats for usage statistics")
+    print("=" * 60)
     app.run(debug=True, host='0.0.0.0', port=5000)

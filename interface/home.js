@@ -42,6 +42,7 @@ cells.forEach((cell, index) => {
 // Initialize game
 async function selectMode(modeIndex) {
     const modes = ['2_players', 'hybrid', 'vs_ml'];
+    const modeNames = ['2 Joueurs', 'Mode Hybride', 'Vs IA'];
     gameMode = modes[modeIndex];
     
     console.log(`Starting game in ${gameMode} mode`);
@@ -56,6 +57,14 @@ async function selectMode(modeIndex) {
         });
         
         const data = await response.json();
+        
+        // Check for errors
+        if (data.error) {
+            alert(`❌ Erreur: ${data.error}`);
+            console.error('Error:', data);
+            return;
+        }
+        
         sessionId = data.session_id;
         gameBoard = data.board;
         currentPlayer = 1;
@@ -69,15 +78,18 @@ async function selectMode(modeIndex) {
             btn.style.backgroundColor = idx === modeIndex ? 'grey' : '';
         });
         
+        // Show success message
+        console.log(`✓ ${modeNames[modeIndex]} commencé!`);
+        
     } catch (error) {
         console.error('Error starting game:', error);
-        alert('Error starting game. Make sure the server is running on port 5000');
+        alert('❌ Erreur: Le serveur n\'est pas disponible sur le port 5000');
     }
 }
 
 async function makeMove(cellIndex) {
-    if (!sessionId) {
-        alert('Sélectionnez un mode de jeu d\'abord');
+    if (!sessionId || gameMode === null) {
+        alert('❌ Veuillez sélectionner un mode de jeu d\'abord');
         return;
     }
     
@@ -194,8 +206,16 @@ function restart() {
                 'Content-Type': 'application/json',
             }
         }).then(response => response.json())
-          .then(data => console.log('Game reset:', data))
-          .catch(error => console.error('Error resetting game:', error));
+          .then(data => {
+              console.log('Game reset:', data);
+              // Reload the window after reset
+              location.reload();
+          })
+          .catch(error => {
+              console.error('Error resetting game:', error);
+              // Reload anyway if error
+              location.reload();
+          });
     }
 }
 
